@@ -1,0 +1,8 @@
+2016-10-17  MMOSimca  <mmosimca@gmail.com>
+
+[c7cf4c09cf07] [v1.1.0]
+* ProgressWeightData.lua:
+
+Wildly expanded World Quest NPC weight data by properly expanding 'Kill Credits' out using 'ProxyCreatureIDs'. Data should now be complete for World Quest NPCs.
+
+

@@ -1,0 +1,8 @@
+2016-10-13  MMOSimca  <mmosimca@gmail.com>
+
+[3363cde2a6a6] [v1.0.3]
+* LibObjectiveProgress-1.0.lua:
+
+Fixed logic for isTeeming check.
+
+

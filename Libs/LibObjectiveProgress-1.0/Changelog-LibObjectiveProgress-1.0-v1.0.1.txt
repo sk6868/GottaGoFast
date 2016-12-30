@@ -1,0 +1,8 @@
+2016-10-09  MMOSimca  <mmosimca@gmail.com>
+
+[45d1f0845ee9] [v1.0.1]
+* LibObjectiveProgress-1.0.lua, ProgressWeightData.lua:
+
+Fixed some basic issues with the code and the revision number replacement.
+
+
