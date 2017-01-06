@@ -6,8 +6,6 @@ function GottaGoFast:OnInitialize()
     -- Called when the addon is loaded
     -- Register Frames
     GottaGoFastFrame = CreateFrame("Frame", "GottaGoFastFrame", UIParent);
-    --GottaGoFastTimerFrame = CreateFrame("Frame", "GottaGoFastTimerFrame", GottaGoFastFrame);
-    --GottaGoFastObjectiveFrame = CreateFrame("Frame", "GottaGoFastObjectiveFrame", GottaGoFastFrame);
     GottaGoFastHideFrame = CreateFrame("Frame");
     GottaGoFastHideFrame:Hide();
 end
@@ -25,7 +23,7 @@ function GottaGoFast:OnEnable()
     self:RegisterEvent("SCENARIO_POI_UPDATE");
     self:RegisterEvent("WORLD_STATE_TIMER_START");
     self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-    self:RegisterEvent("GOSSIP_SHOW");
+    --self:RegisterEvent("GOSSIP_SHOW");
     self:RegisterChatCommand("ggf", "ChatCommand");
     self:RegisterChatCommand("GottaGoFast", "ChatCommand");
     self:RegisterComm("GottaGoFast", "ChatComm");
@@ -117,11 +115,13 @@ function GottaGoFast:UPDATE_MOUSEOVER_UNIT()
   end
 end
 
+--[[
 function GottaGoFast:GOSSIP_SHOW()
   if (self.inCM == true and self.CurrentCM ~= nil and next(self.CurrentCM) ~= nil) then
     GottaGoFast.HandleGossip();
   end
 end
+]]--
 
 function GottaGoFast:ChatCommand(input)
   if (string.lower(input) == "debugmode") then

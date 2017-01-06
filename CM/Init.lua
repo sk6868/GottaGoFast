@@ -273,6 +273,7 @@ function GottaGoFast.UnitID(guid)
   return nil;
 end
 
+--[[
 function GottaGoFast.HandleSpy()
   if (GottaGoFast.GetSpyHelper(nil)) then
     local mobID = GottaGoFast.UnitID(UnitGUID("target"));
@@ -305,6 +306,7 @@ function GottaGoFast.HandleGossip()
     GottaGoFast.HandleSpy();
   end
 end
+]]--
 
 local GGF_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
 
