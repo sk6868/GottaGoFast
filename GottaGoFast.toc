@@ -18,7 +18,6 @@ Timer/Init.lua
 Timer/Utility.lua
 
 CM/Init.lua
-CM/Utility.lua
 
 InstanceInfo.lua
 
