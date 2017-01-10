@@ -66,7 +66,7 @@ function GottaGoFast:PLAYER_ENTERING_WORLD()
   GottaGoFast.Utility.DebugPrint("Player Entered World");
   GottaGoFast.CheckCount = 0;
   GottaGoFast.FirstCheck = false;
-  GottaGoFast.ResetState();
+  --GottaGoFast.ResetState();
   GottaGoFast.WhereAmI();
 end
 
@@ -154,6 +154,9 @@ function GottaGoFast:CMChatComm(prefix, input, distribution, sender)
   end
 end
 
+local reset_time = 8.0
+local last_cm_zoneid = nil
+
 function GottaGoFast.ResetState()
   GottaGoFast.WipeCM();
   GottaGoFast.inCM = false;
@@ -162,6 +165,7 @@ function GottaGoFast.ResetState()
   GottaGoFastFrame:SetScript("OnUpdate", nil);
   GottaGoFast.HideFrames();
   GottaGoFast.ShowObjectiveTracker();
+  last_cm_zoneid = nil
 end
 
 function GottaGoFast.WhereAmI()
@@ -172,11 +176,23 @@ function GottaGoFast.WhereAmI()
     GottaGoFast.FirstCheck = true;
     GottaGoFast:ScheduleTimer(GottaGoFast.WhereAmI, 0.2);
   elseif (difficulty == 8) then
-    GottaGoFast.InitCM(currentZoneID)
-  elseif (GottaGoFast.CheckCount < 20 and GottaGoFast.InstanceInfo[currentZoneID]) then
-    GottaGoFast.CheckCount = GottaGoFast.CheckCount + 1;
-    GottaGoFast:ScheduleTimer(GottaGoFast.WhereAmI, 0.2);
+	if (not last_cm_zoneid) or (last_cm_zoneid ~= currentZoneID) then
+		last_cm_zoneid = currentZoneID;
+		GottaGoFast.InitCM(currentZoneID);
+	end
   else
-    GottaGoFast.ResetState();
+    --GottaGoFast.ResetState();
+	if GottaGoFast.CurrentCM["Completed"] == false then
+		GottaGoFast:ScheduleTimer(GottaGoFast.CheckLeftForGood, reset_time, GottaGoFast.CurrentCM["ZoneID"]);
+	else
+		GottaGoFast:ScheduleTimer(GottaGoFast.CheckLeftForGood, 1, GottaGoFast.CurrentCM["ZoneID"]);
+	end
   end
+end
+
+function GottaGoFast.CheckLeftForGood(ZoneID)
+	local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
+	if (difficulty ~= 8) then
+		GottaGoFast.ResetState();
+	end
 end
