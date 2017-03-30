@@ -16,14 +16,15 @@ function GottaGoFast:OnEnable()
     -- Register Events
     RegisterAddonMessagePrefix("GottaGoFast");
     RegisterAddonMessagePrefix("GottaGoFastCM");
-    self:RegisterEvent("CHALLENGE_MODE_START");
     self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
     self:RegisterEvent("CHALLENGE_MODE_RESET");
+    self:RegisterEvent("CHALLENGE_MODE_START");
+    --self:RegisterEvent("GOSSIP_SHOW");
     self:RegisterEvent("PLAYER_ENTERING_WORLD");
     self:RegisterEvent("SCENARIO_POI_UPDATE");
-    self:RegisterEvent("WORLD_STATE_TIMER_START");
     self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-    --self:RegisterEvent("GOSSIP_SHOW");
+    self:RegisterEvent("WORLD_STATE_TIMER_START");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     self:RegisterChatCommand("ggf", "ChatCommand");
     self:RegisterChatCommand("GottaGoFast", "ChatCommand");
     self:RegisterComm("GottaGoFast", "ChatComm");
@@ -41,13 +42,6 @@ function GottaGoFast:OnDisable()
   -- Called when the addon is disabled
 end
 
-function GottaGoFast:CHALLENGE_MODE_START()
-  GottaGoFast.Utility.DebugPrint("CM Start");
-  local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
-  GottaGoFast.InitCM(currentZoneID);
-  GottaGoFast.StartCM(10);
-end
-
 function GottaGoFast:CHALLENGE_MODE_COMPLETED()
   GottaGoFast.Utility.DebugPrint("CM Complete");
   GottaGoFast.CompleteCM();
@@ -57,17 +51,20 @@ function GottaGoFast:CHALLENGE_MODE_COMPLETED()
 end
 
 function GottaGoFast:CHALLENGE_MODE_RESET()
-  GottaGoFast.Utility.DebugPrint("CM Reset");
-  local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
-  GottaGoFast.InitCM(currentZoneID);
+  GottaGoFast.Utility.DebugPrint("CM Reset")
+  GottaGoFast.ResetState()
+  GottaGoFast.HideObjectiveTracker()
+end
+
+function GottaGoFast:CHALLENGE_MODE_START()
+  GottaGoFast.Utility.DebugPrint("CM Start")
+  GottaGoFast.ResetState()
+  GottaGoFast.HideObjectiveTracker()
 end
 
 function GottaGoFast:PLAYER_ENTERING_WORLD()
-  GottaGoFast.Utility.DebugPrint("Player Entered World");
-  GottaGoFast.CheckCount = 0;
-  GottaGoFast.FirstCheck = false;
-  --GottaGoFast.ResetState();
-  GottaGoFast.WhereAmI();
+  GottaGoFast.Utility.DebugPrint("Player Entered World")
+  GottaGoFast.WhereAmI()
 end
 
 function GottaGoFast:SCENARIO_POI_UPDATE()
@@ -81,22 +78,20 @@ function GottaGoFast:SCENARIO_POI_UPDATE()
   end
 end
 
-function GottaGoFast:WORLD_STATE_TIMER_START()
-  if (GottaGoFast.inCM == true) then
-    if (GottaGoFast.CurrentCM == nil or next(GottaGoFast.CurrentCM) == nil or GottaGoFast.CurrentCM["Steps"] == 0) then
-      local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
-      GottaGoFast.InitCM(currentZoneID)
-    end
-    if (GottaGoFast.CurrentCM["Completed"] == false) then
-      local _, timeCM = GetWorldElapsedTime(1);
-      if (timeCM ~= nil and timeCM <= 2) then
-        GottaGoFast.StartCM(0);
-        GottaGoFast.UpdateCMObjectives();
+function GottaGoFast:WORLD_STATE_TIMER_START(_, timerID)
+  GottaGoFast.Utility.DebugPrint("World Start Timer Start"..timerID)
+  if (GottaGoFast.inCM == false or next(GottaGoFast.CurrentCM) == nil or next(GottaGoFast.CurrentCM) == nil or GottaGoFast.CurrentCM["Steps"] == 0) then
+    GottaGoFast.WhereAmI()
+  end
+  if (GottaGoFast.inCM and GottaGoFast.CurrentCM["Completed"] == false) then
+      local _, timeCM, type = GetWorldElapsedTime(timerID)
+      if (type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE and timeCM ~= nil and timeCM <= 2) then
+        GottaGoFast.StartCM(0)
+        GottaGoFast.UpdateCMObjectives()
       elseif (GottaGoFast.CurrentCM["Deaths"]) then
-        GottaGoFast.CurrentCM["Deaths"] = GottaGoFast.CurrentCM["Deaths"] + 1;
-        GottaGoFast.UpdateCMObjectives();
+        GottaGoFast.CurrentCM["Deaths"] = GottaGoFast.CurrentCM["Deaths"] + 1
+        GottaGoFast.UpdateCMObjectives()
       end
-    end
   end
 end
 
@@ -104,9 +99,12 @@ function GottaGoFast:UPDATE_MOUSEOVER_UNIT()
   if (self.inCM == true and self.GetIndividualMobValue(nil) == true and self.CurrentCM ~= nil and next(self.CurrentCM) ~= nil) then
     local npcID = GottaGoFast.MouseoverUnitID();
     local mapID = self.CurrentCM["ZoneID"];
+	local cmID = self.CurrentCM["CmID"]
     local isTeeming = self.HasTeeming(self.CurrentCM["Affixes"]);
     if (npcID ~= nil and mapID ~= nil and isTeeming ~= nil) then
-      local weight = self.LOP:GetNPCWeightByMap(mapID, npcID, isTeeming);
+	  -- Upper Karazhan Check Should Be Param 4
+      local upper = cmID == 234
+      local weight = self.LOP:GetNPCWeightByMap(mapID, npcID, isTeeming, upper);
       if (weight ~= nil) then
         local appendString = string.format(" (%.1f%%)", weight);
         GameTooltip:AppendText(appendString);
@@ -122,6 +120,11 @@ function GottaGoFast:GOSSIP_SHOW()
   end
 end
 ]]--
+
+function GottaGoFast:ZONE_CHANGED_NEW_AREA()
+  GottaGoFast.Utility.DebugPrint("Zone Changed New Area")
+  GottaGoFast.WhereAmI();
+end
 
 function GottaGoFast:ChatCommand(input)
   if (string.lower(input) == "debugmode") then
@@ -172,13 +175,11 @@ function GottaGoFast.WhereAmI()
   local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
   GottaGoFast.Utility.DebugPrint("Difficulty: " .. difficulty);
   GottaGoFast.Utility.DebugPrint("Zone ID: " .. currentZoneID);
-  if (GottaGoFast.FirstCheck == false) then
-    GottaGoFast.FirstCheck = true;
-    GottaGoFast:ScheduleTimer(GottaGoFast.WhereAmI, 0.2);
-  elseif (difficulty == 8) then
+  local challengeMapID = C_ChallengeMode.GetActiveChallengeMapID()
+  if (difficulty == 8 and challengeMapID ~= nil) then
 	if (not last_cm_zoneid) or (last_cm_zoneid ~= currentZoneID) then
 		last_cm_zoneid = currentZoneID;
-		GottaGoFast.InitCM(currentZoneID);
+		GottaGoFast.InitCM(challengeMapID, currentZoneID);
 	end
   else
     --GottaGoFast.ResetState();

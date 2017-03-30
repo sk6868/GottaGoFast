@@ -1,0 +1,13 @@
+changeset:   12:656d44592b6d
+tag:         v1.2.0
+user:        MMOSimca
+date:        Sun Mar 26 18:55:03 2017 -0400
+summary:     Full Mythic+ data update for Patch 7.2.0, including fixes for a couple of missed NPCs in the Patch 7.1.0 data.
+
+
+changeset:   11:59cb78768c84
+user:        MMOSimca <mmosimca@gmail.com>
+date:        Tue Oct 25 19:44:03 2016 -0400
+summary:     Added tag v1.1.1 for changeset 84900c470ecd
+
+

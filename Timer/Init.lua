@@ -1,14 +1,14 @@
 local GottaGoFast = LibStub("AceAddon-3.0"):GetAddon("GottaGoFast")
 
-function GottaGoFast.InitState()
+function GottaGoFast:InitState()
   -- Default AddOn Globals
-  GottaGoFast.inCM = false;
-  GottaGoFast.minWidth = 200;
-  GottaGoFast.unlocked = false;
-  GottaGoFast.defaultTooltip = "Not In A CM";
-  GottaGoFast.tooltip = GottaGoFast.defaultTooltip;
-  GottaGoFast.demoMode = false;
-  GottaGoFast.Models = {};
+  self.inCM = false;
+  self.minWidth = 200;
+  self.unlocked = false;
+  self.defaultTooltip = "Not In A CM";
+  self.tooltip = self.defaultTooltip;
+  self.demoMode = false;
+  self.Models = {};
 end
 
 function GottaGoFast.TooltipOnEnter(self)

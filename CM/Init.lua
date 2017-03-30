@@ -3,7 +3,7 @@ local constants = GottaGoFast.Constants;
 local utility = GottaGoFast.Utility;
 
 local affixID_to_Name = {
-	[1] = "Overflowing",
+	[1] = "Overflowing", -- removed in 7.2
 	[2] = "Skittish",
 	[3] = "Volcanic",
 	[4] = "Necrotic",
@@ -12,7 +12,11 @@ local affixID_to_Name = {
 	[7] = "Bolstering",
 	[8] = "Sanguine",
 	[9] = "Tyrannical",
-	[10] = "Fortified"
+	[10] = "Fortified",
+	[11] = "Bursting",
+	[12] = "Grievous",
+	[13] = "Explosive",
+	[14] = "Quaking",
 };
 
 GottaGoFast.CurrentCM = {};
@@ -32,15 +36,17 @@ for affixID, _ in ipairs(affixID_to_Name) do
 	--print("affixID=", affixID, ", name =", affixName)
 end
   
-function GottaGoFast.SetupCM(currentZoneID)
+function GottaGoFast.SetupCM(challengeMapID, currentZoneID)
   local _, _, steps = C_Scenario.GetStepInfo();
   local cmLevel, affixes, empowered = C_ChallengeMode.GetActiveKeystoneInfo();
+  --local mapID = C_ChallengeMode.GetActiveChallengeMapID();
   --GottaGoFast.CurrentCM = {};
+  GottaGoFast.CurrentCM["Name"], GottaGoFast.CurrentCM["CmID"], GottaGoFast.CurrentCM["GoldTimer"] = C_ChallengeMode.GetMapInfo(challengeMapID);
   GottaGoFast.CurrentCM["StartTime"] = nil;
   GottaGoFast.CurrentCM["Time"] = nil;
   GottaGoFast.CurrentCM["CurrentTime"] = nil;
   GottaGoFast.CurrentCM["String"] = nil;
-  GottaGoFast.CurrentCM["Name"], GottaGoFast.CurrentCM["ZoneID"], GottaGoFast.CurrentCM["GoldTimer"] = C_ChallengeMode.GetMapInfo(currentZoneID);
+  GottaGoFast.CurrentCM["ZoneID"] = currentZoneID
   GottaGoFast.CurrentCM["Deaths"] = 0;
   GottaGoFast.CurrentCM["Steps"] = steps;
   GottaGoFast.CurrentCM["Level"] = cmLevel;
@@ -113,7 +119,8 @@ function GottaGoFast.SetupFakeCM()
   GottaGoFast.CurrentCM["Time"] = nil;
   GottaGoFast.CurrentCM["CurrentTime"] = nil;
   GottaGoFast.CurrentCM["String"] = nil;
-  GottaGoFast.CurrentCM["Name"], GottaGoFast.CurrentCM["ZoneID"], GottaGoFast.CurrentCM["GoldTimer"] = C_ChallengeMode.GetMapInfo(1458);
+  GottaGoFast.CurrentCM["Name"], GottaGoFast.CurrentCM["CmID"], GottaGoFast.CurrentCM["GoldTimer"] = C_ChallengeMode.GetMapInfo(206);
+  GottaGoFast.CurrentCM["ZoneID"] = 1492;
   GottaGoFast.CurrentCM["Deaths"] = 4;
   GottaGoFast.CurrentCM["Steps"] = 5;
   GottaGoFast.CurrentCM["Level"] = 10;
@@ -223,11 +230,11 @@ function GottaGoFast.BuildCMTooltip()
   --end
 end
 
-function GottaGoFast.InitCM(currentZoneID)
+function GottaGoFast.InitCM(challengeMapID, currentZoneID)
   GottaGoFast.Utility.DebugPrint("Player Entered Challenge Mode");
   GottaGoFast.WipeCM();
   GottaGoFast.Utility.DebugPrint("Wiping CM");
-  GottaGoFast.SetupCM(currentZoneID);
+  GottaGoFast.SetupCM(challengeMapID, currentZoneID);
   GottaGoFast.Utility.DebugPrint("Setting Up CM");
   GottaGoFast.UpdateCMTimer();
   GottaGoFast.Utility.DebugPrint("Setting Up Timer");

@@ -4,7 +4,7 @@ Developed by: Simca@Malfurion (MMOSimca)
 ]]--
 
 -- Set major/minor version
-local MAJOR, MINOR = "LibObjectiveProgress-1.0", 11
+local MAJOR, MINOR = "LibObjectiveProgress-1.0", 13
 assert(LibStub, MAJOR .. " requires LibStub")
 
 -- Initialize library
@@ -16,13 +16,14 @@ local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
 local GetQuestLogTitle = _G.GetQuestLogTitle
 
 
-function LOP:GetNPCWeightByMap(mapID, npcID, isTeeming)
+function LOP:GetNPCWeightByMap(mapID, npcID, isTeeming, isUpperKarazhan)
     -- Load map-based weight data if needed
     if not LOP.MapBasedWeights then LOP:LoadWeightDataByMap() end
 
     -- Ensure that specified map/NPC is valid
     local tableIndex = 1
     if isTeeming then tableIndex = 2 end
+    if isUpperKarazhan then tableIndex = tableIndex + 2 end -- Nasty hack for Upper Return to Karazhan (since it shares a mapID with Lower Return to Karazhan)
     if not LOP.MapBasedWeights[mapID] or not LOP.MapBasedWeights[mapID][tableIndex] or not LOP.MapBasedWeights[mapID][tableIndex][npcID] then return nil end
 
     -- Get map-based weight data for specified NPC
