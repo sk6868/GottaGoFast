@@ -103,7 +103,7 @@ function GottaGoFast.ToggleDemoMode()
   if (GottaGoFast.inCM == false) then
     -- Demo Mode Goes Here
     if (GottaGoFast.demoMode == false) then
-      GottaGoFast.SetupFakeCM();
+      GottaGoFast:SetupFakeCM();
       GottaGoFast.UpdateCMTimer();
       GottaGoFast.UpdateCMObjectives();
       GottaGoFastFrame:SetScript("OnUpdate", GottaGoFast.UpdateCM);

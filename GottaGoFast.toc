@@ -8,7 +8,6 @@
 
 Embeds.xml
 
-Init.lua
 Constants.lua
 Utility.lua
 
@@ -18,8 +17,6 @@ Timer/Init.lua
 Timer/Utility.lua
 
 CM/Init.lua
-
-InstanceInfo.lua
 
 Options/GettersAndSetters.lua
 Options/Init.lua
