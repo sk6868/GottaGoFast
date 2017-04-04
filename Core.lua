@@ -44,33 +44,31 @@ function GottaGoFast:OnDisable()
 end
 
 function GottaGoFast:CHALLENGE_MODE_COMPLETED()
-  GottaGoFast.Utility.DebugPrint("CM Complete");
+  debugPrint("CM Complete");
   GottaGoFast.CompleteCM();
-  if (GottaGoFast.CurrentCM and next(GottaGoFast.CurrentCM) ~= nil) then
-    GottaGoFast.CreateRun(GottaGoFast.CurrentCM);
-  end
+  GottaGoFast.CreateRun(GottaGoFast.CurrentCM);
 end
 
 function GottaGoFast:CHALLENGE_MODE_RESET()
-  GottaGoFast.Utility.DebugPrint("CM Reset")
+  debugPrint("CM Reset")
   GottaGoFast.ResetState()
   GottaGoFast.HideObjectiveTracker()
 end
 
 function GottaGoFast:CHALLENGE_MODE_START()
-  GottaGoFast.Utility.DebugPrint("CM Start")
+  debugPrint("CM Start")
   GottaGoFast.ResetState()
   GottaGoFast.HideObjectiveTracker()
 end
 
 function GottaGoFast:PLAYER_ENTERING_WORLD()
-  self.Utility.DebugPrint("Player Entered World")
+  debugPrint("Player Entered World")
   self:WhereAmI()
 end
 
 function GottaGoFast:SCENARIO_POI_UPDATE()
   if (self.inCM) then
-    self.Utility.DebugPrint("Scenario POI Update");
+    debugPrint("Scenario POI Update");
     if (self.CurrentCM["Steps"] == 0 and self.CurrentCM["Completed"] == false and next(self.CurrentCM["Bosses"]) == nil) then
       self:WhereAmI();
     end
@@ -80,7 +78,7 @@ function GottaGoFast:SCENARIO_POI_UPDATE()
 end
 
 function GottaGoFast:WORLD_STATE_TIMER_START(_, timerID)
-  self.Utility.DebugPrint("World Start Timer Start"..timerID)
+  debugPrint("World Start Timer Start"..timerID)
   if (self.inCM == false or next(self.CurrentCM) == nil or next(self.CurrentCM) == nil or self.CurrentCM["Steps"] == 0) then
     self:WhereAmI()
   end
@@ -123,7 +121,7 @@ end
 ]]--
 
 function GottaGoFast:ZONE_CHANGED_NEW_AREA()
-  self.Utility.DebugPrint("Zone Changed New Area")
+  debugPrint("Zone Changed New Area")
   self:WhereAmI();
 end
 
@@ -138,9 +136,9 @@ function GottaGoFast:ChatCommand(input)
 end
 
 function GottaGoFast:ChatComm(prefix, input, distribution, sender)
-  GottaGoFast.Utility.DebugPrint("History Message (From History Addon) Received");
+  debugPrint("History Message (From History Addon) Received");
   if (prefix == "GottaGoFast" and input == "HistoryLoaded") then
-    GottaGoFast.Utility.DebugPrint("Input: History Loaded")
+    debugPrint("Input: History Loaded")
     if (GottaGoFast.SendHistoryFlag == true) then
       GottaGoFast.SendHistory(self.db.profile.History);
     end
@@ -149,7 +147,7 @@ end
 
 function GottaGoFast:CMChatComm(prefix, input, distribution, sender)
   -- Right Now This Is Only Used For Syncing Timer
-  GottaGoFast.Utility.DebugPrint("CM Message Received");
+  debugPrint("CM Message Received");
   if (prefix == "GottaGoFastCM" and input == "FixCM" and GottaGoFast.inCM == true and GottaGoFast.CurrentCM and next(GottaGoFast.CurrentCM) ~= nil) then
     GottaGoFast.CheckCMTimer();
   elseif (prefix == "GottaGoFastCM" and GottaGoFast.inCM == true and GottaGoFast.CurrentCM and next(GottaGoFast.CurrentCM) ~= nil) then
@@ -174,8 +172,8 @@ end
 
 function GottaGoFast:WhereAmI()
   local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo();
-  self.Utility.DebugPrint("Difficulty: " .. difficulty);
-  self.Utility.DebugPrint("Zone ID: " .. currentZoneID);
+  debugPrint("Difficulty: " .. difficulty);
+  debugPrint("Zone ID: " .. currentZoneID);
   local challengeMapID = C_ChallengeMode.GetActiveChallengeMapID()
   if (difficulty == 8 and challengeMapID ~= nil) then
 	if (not last_cm_zoneid) or (last_cm_zoneid ~= currentZoneID) then
